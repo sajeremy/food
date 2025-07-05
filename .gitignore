@@ -14,3 +14,6 @@ wheels/
 
 # Resources
 resources/*
+
+# Linting
+.ruff_cache/
