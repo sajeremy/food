@@ -14,3 +14,15 @@ dependencies = [
 dev = [
     "ruff>=0.12.2",
 ]
+
+[tool.ruff]
+line-length = 120
+lint.select = [
+    "E",  # pycodestyle errors
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "N",  # pep8-naming,
+    "UP", # pyupgrade
+]
