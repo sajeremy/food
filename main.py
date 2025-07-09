@@ -4,7 +4,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from model.groceries import GroceryReceipt
+from agents.groceries import GroceryReceipt
 from utils import ImageType, create_gemini_img_message
 
 
@@ -12,7 +12,7 @@ def main():
     # Get environment variables and constants
     load_dotenv(".env.local")
     api_key = os.getenv("GEMINI_API_KEY")
-    img_path = Path("resources/not_receipt.jpg")
+    img_path = Path("/Users/jeremysantiago/Desktop/Projects/food/resources/receipt_1.HEIC")
 
     # Initialize the Google Gemini model
     model = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0, google_api_key=api_key)
