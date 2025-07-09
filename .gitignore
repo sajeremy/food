@@ -17,3 +17,6 @@ resources/*
 
 # Linting
 .ruff_cache/
+
+# Mac
+.DS_Store
