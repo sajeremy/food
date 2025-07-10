@@ -4,7 +4,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from model.groceries import GroceryReceipt
+from model.groceries import GroceryReceiptSchema
 from utils import ImageType, create_gemini_img_message
 
 
@@ -18,7 +18,7 @@ def main():
     # Initialize the Google Gemini model
     model = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0, google_api_key=api_key)
     grocery_parsing_model = model.with_structured_output(
-        schema=GroceryReceipt,
+        schema=GroceryReceiptSchema,
     )
 
     # Read image file
@@ -30,7 +30,7 @@ def main():
     system_prompt = (
         "You are a helpful assistant that parses images of receipts and extracts the information."
         "Format all dates in ISO format (YYYY-MM-DD HH:MM:SS)."
-        f"Populate the purchaser_username field with the value '{food_username}'."
+        f"Populate the user field with the value '{food_username}'."
         "If uploaded image is not a valid grocery receipt or cannot be parsed, mark is_valid as false"
         "and return None for all other fields."
     )
