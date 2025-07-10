@@ -16,14 +16,15 @@ class Store(BaseModel):
 
 
 class Purchase(BaseModel):
-    name: str
-    quantity: float
-    unit_price: float
-    unit_type: UnitType
+    name: str = Field(description="Name of the purchased item")
+    quantity: float = Field(description="Quantity of the purchased item")
+    unit_price: float = Field(description="Unit price of the purchased item")
+    unit_type: UnitType = Field(description="Unit type of the purchased item, e.g., lb, ea")
 
 
 class GroceryReceipt(BaseModel):
     is_valid: bool = Field(description="Indicates if a valid grocery receipt")
+    purchaser_username: str | None = Field(default=None, description="Username of purchaser")
     store: Store | None = Field(default=None, description="Store information")
     date_time: datetime | None = Field(default=None, description="Date and time of the purchase as datetime object")
     purchases: list[Purchase] | None = Field(default=None, description="List of purchased items")
