@@ -2,7 +2,6 @@ import hashlib
 from datetime import datetime
 from enum import StrEnum
 
-from pydantic import ValidationInfo, field_validator
 from sqlalchemy import String
 from sqlmodel import Column, Field, Relationship, SQLModel
 
@@ -47,7 +46,7 @@ class GroceryReceiptBase(SQLModel):
 
 class GroceryReceiptSchema(GroceryReceiptBase):
     is_valid: bool = Field(description="Indicates if a valid grocery receipt")
-    user: str | None = Field(default=None, description="Username of the person who made the purchase")
+    user: User = Field(default=None, description="User who made the purchase")
     store: Store | None = Field(default=None, description="Store where the purchase was made")
     purchases: list[Purchase] | None = Field(default=None, description="List of purchased items")
 
@@ -59,7 +58,6 @@ class GroceryReceipt(GroceryReceiptBase, table=True):
     store_id: int | None = Field(
         default=None, foreign_key="store.id", description="ID of the store where the purchase was made"
     )
-    image_content: bytes | None = Field(default=None, description="Raw image content of the receipt", exclude=True)
     image_hash: str | None = Field(
         default=None,
         sa_column=Column(String(64), unique=True, index=True),
@@ -71,30 +69,21 @@ class GroceryReceipt(GroceryReceiptBase, table=True):
     store: Store | None = Relationship(back_populates="receipts", sa_relationship_kwargs={"lazy": "select"})
     purchases: list["Purchase"] = Relationship(back_populates="receipt", sa_relationship_kwargs={"lazy": "select"})
 
-    @field_validator("image_hash", mode="before")
-    @classmethod
-    def generate_image_hash(cls, v: str | None, info: ValidationInfo) -> str | None:
-        """Generate a unique hash for the receipt image.
-
-        Args:
-            v (str | None): The current value of the image_hash field.
-            info (ValidationInfo): Validation information.
-
-        Returns:
-            str | None: The generated image hash or None if the image_content is not available.
-        """
-        if v is not None:
-            return v
-
-        img_content = info.data.get("image_content")
-        return hashlib.sha256(img_content).hexdigest() if img_content else None
+    @staticmethod
+    def generate_image_hash(image_content: bytes) -> str:
+        """Generate a SHA-256 hash for the given image content."""
+        return hashlib.sha256(image_content).hexdigest()
 
     @classmethod
-    def from_image_and_data(cls, image_content: bytes, data: GroceryReceiptSchema) -> "GroceryReceipt":
+    def from_image_and_data(
+        cls, image_content: bytes, user_id: int, store_id: int | None, date_time: datetime | None
+    ) -> "GroceryReceipt":
         receipt_data = {
-            "image_content": image_content,
+            "image_hash": cls.generate_image_hash(image_content),
+            "user_id": user_id,
+            "store_id": store_id,
+            "date_time": date_time,
         }
-        gr_schema_data = data.model_dump(exclude_unset=True)
-        receipt_data.update(gr_schema_data)
+
         receipt = cls(**receipt_data)
         return receipt
