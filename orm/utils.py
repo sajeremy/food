@@ -143,6 +143,24 @@ def create_transaction_from_purchase(
     return transaction
 
 
+def is_receipt_in_db(img_content: bytes, db_url: str) -> bool:
+    """Check if a grocery receipt already exists in the database.
+
+    Args:
+        img_content (bytes): The image content of the grocery receipt.
+        db_url (str): The database URL.
+
+    Returns:
+        bool: True if the receipt exists, False otherwise.
+    """
+    img_hash = GroceryReceipt.generate_image_hash(img_content)
+    engine = create_engine(db_url)
+
+    with Session(engine) as session:
+        existing_receipt = session.exec(select(GroceryReceipt).where(GroceryReceipt.image_hash == img_hash)).first()
+        return existing_receipt is not None
+
+
 def add_grocery_receipt_to_db(img_content: bytes, parsed_data: GroceryReceiptSchema, db_url: str):
     """Add a grocery receipt to the database.
 
@@ -151,16 +169,9 @@ def add_grocery_receipt_to_db(img_content: bytes, parsed_data: GroceryReceiptSch
         parsed_data (GroceryReceiptSchema): The parsed data from the grocery receipt.
         db_url (str): The database URL.
     """
-    img_hash = GroceryReceipt.generate_image_hash(img_content)
     engine = create_engine(db_url)
 
     with Session(engine) as session:
-        # Check if the receipt already exists in the database
-        existing_receipt = session.exec(select(GroceryReceipt).where(GroceryReceipt.image_hash == img_hash)).first()
-        if existing_receipt:
-            print("Receipt already exists in the database. Skipping insertion.")
-            return
-
         user = get_or_create_user(session=session, username=parsed_data.user.username)
 
         if parsed_data.store:

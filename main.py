@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from orm.data_models import GroceryCategory, GroceryReceiptSchema
-from orm.utils import add_grocery_receipt_to_db
+from orm.utils import add_grocery_receipt_to_db, is_receipt_in_db
 from utils import ImageType, create_gemini_img_message
 
 
@@ -57,16 +57,20 @@ def main():
     db_url = os.getenv("DB_URL")
     img_path = Path("/Users/jeremysantiago/Desktop/Projects/food/resources/receipt_1.HEIC")
 
+    # Read image file
+    img_type = ImageType.from_extension(img_path.suffix)
+    with img_path.open("rb") as img_file:
+        img_content = img_file.read()
+
+    if is_receipt_in_db(img_content=img_content, db_url=db_url):
+        print("Receipt already exists in the database. Will not parse.")
+        return
+
     # Initialize the Google Gemini model
     model = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0, google_api_key=api_key)
     gr_parsing_model = model.with_structured_output(
         schema=GroceryReceiptSchema,
     )
-
-    # Read image file
-    img_type = ImageType.from_extension(img_path.suffix)
-    with img_path.open("rb") as img_file:
-        img_content = img_file.read()
 
     # Create message for Model
     system_prompt = (
