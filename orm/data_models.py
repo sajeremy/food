@@ -70,6 +70,7 @@ class Transaction(TransactionBase, table=True):
     )
     item_id: int = Field(foreign_key="items.id", description="ID of the purchased item, referencing the Item table")
 
+    item: "Item" = Relationship(back_populates="transactions", sa_relationship_kwargs={"lazy": "select"})
     receipt: "GroceryReceipt" = Relationship(back_populates="transactions", sa_relationship_kwargs={"lazy": "select"})
 
 
@@ -127,7 +128,7 @@ class GroceryReceipt(GroceryReceiptBase, table=True):
 
     user: User = Relationship(back_populates="receipts", sa_relationship_kwargs={"lazy": "select"})
     store: Store = Relationship(back_populates="receipts", sa_relationship_kwargs={"lazy": "select"})
-    purchases: list[Transaction] = Relationship(back_populates="receipt", sa_relationship_kwargs={"lazy": "select"})
+    transactions: list[Transaction] = Relationship(back_populates="receipt", sa_relationship_kwargs={"lazy": "select"})
 
     @staticmethod
     def generate_image_hash(image_content: bytes) -> str:
