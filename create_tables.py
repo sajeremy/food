@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from sqlmodel import SQLModel, create_engine
 
-from model.groceries import GroceryReceipt, Purchase, Store, User
+from orm.data_models import GroceryReceipt, Store, User, Transaction, UnitType, GroceryCategory
 
 
 def setup_database():
@@ -23,4 +23,4 @@ def setup_database():
 
 if __name__ == "__main__":
     # Create all tables
-    setup_database(models=[User, Store, GroceryReceipt, Purchase])
+    setup_database()
