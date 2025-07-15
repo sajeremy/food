@@ -1,12 +1,9 @@
-import os
 from pathlib import Path
 
-from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI
-
-from orm.data_models import GroceryCategory, GroceryReceiptSchema
+from agent.utils import ImageType, parse_grocery_receipt
+from config import settings
+from orm.data_models import GroceryReceiptSchema
 from orm.utils import add_grocery_receipt_to_db, is_receipt_in_db
-from utils import ImageType, create_gemini_img_message
 
 
 def print_receipt_info(gr_schema: GroceryReceiptSchema):
@@ -51,10 +48,7 @@ def get_user_confirmation() -> bool:
 
 def main():
     # Get environment variables and constants
-    load_dotenv(".env.local")
-    api_key = os.getenv("GEMINI_API_KEY")
-    food_username = os.getenv("FOOD_USERNAME")
-    db_url = os.getenv("DB_URL")
+    food_username = "food_user"
     img_path = Path("/Users/jeremysantiago/Desktop/Projects/food/resources/receipt_1.HEIC")
 
     # Read image file
@@ -62,35 +56,16 @@ def main():
     with img_path.open("rb") as img_file:
         img_content = img_file.read()
 
-    if is_receipt_in_db(img_content=img_content, db_url=db_url):
+    if is_receipt_in_db(img_content=img_content, db_url=settings.database_url):
         print("Receipt already exists in the database. Will not parse.")
         return
 
     # Initialize the Google Gemini model
-    model = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0, google_api_key=api_key)
-    gr_parsing_model = model.with_structured_output(
-        schema=GroceryReceiptSchema,
-    )
-
-    # Create message for Model
-    system_prompt = (
-        "You are a helpful assistant that parses images of receipts and extracts the information."
-        "Format all dates in ISO format (YYYY-MM-DD HH:MM:SS)."
-        f"Populate the user.username field with the value '{food_username}'."
-        f"Populate Purchase.category with one of the following values: {', '.join(GroceryCategory.__members__.keys())}."
-        f"Populate Purchase.brand with the brand name if available, otherwise leave it as None."
-        "If uploaded image is not a valid grocery receipt or cannot be parsed, mark is_valid as false"
-        "and return None for all other fields."
-    )
-    human_message = create_gemini_img_message(img_content=img_content, img_type=img_type)
-    messages = [("system", system_prompt), human_message]
-
-    # Call model
-    gr_schema = gr_parsing_model.invoke(messages)
+    gr_schema = parse_grocery_receipt(user=food_username, img_content=img_content, img_type=img_type)
 
     print_receipt_info(gr_schema)
     if get_user_confirmation():
-        add_grocery_receipt_to_db(img_content=img_content, parsed_data=gr_schema, db_url=db_url)
+        add_grocery_receipt_to_db(img_content=img_content, parsed_data=gr_schema, db_url=settings.database_url)
         print("Receipt saved successfully.")
 
 
