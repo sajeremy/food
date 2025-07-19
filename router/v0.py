@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, File, Form, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
 from agent.utils import ImageType, parse_grocery_receipt
 from config import settings
@@ -37,6 +37,9 @@ async def parse_grocery_receipt_image(
 
     # todo: handle separate cases for invalid image, file type, already existing receipt, server error
     if is_receipt_in_db(img_content=img_content, db_url=settings.database_url):
-        return GroceryReceiptSchema(is_valid=False, user=UserBase(username=user), purchases=[])
+        raise HTTPException(
+            status_code=409,
+            detail="Receipt already exists in the database.",
+        )
 
     return parse_grocery_receipt(user=user, img_content=img_content, img_type=img_type)
