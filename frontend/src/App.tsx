@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { parseGroceryReceipt } from './services/api/groceryReceipt';
 
 function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -16,25 +17,15 @@ function App() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('user', 'test_user'); // Replace with actual user
-    formData.append('img_file', selectedFile);
 
     try {
-      const response = await fetch('http://localhost:8000/api/v0/grocery_receipt', {
-        method: 'POST',
-        body: formData,
+      const groceryData = await parseGroceryReceipt({
+        user: 'test_user', // Replace with actual user ID or context
+        imgFile: selectedFile,
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        setParsedData(data);
-        console.log('Parsed Data:', data);
-      } else {
-        const errorData = await response.json();
-        alert(`Error: ${errorData.detail}`);
-      }
-    } catch (error) {
+      setParsedData(groceryData);
+    } 
+    catch (error) {
       console.error('Error parsing receipt:', error);
       alert('An unexpected error occurred.');
     }
