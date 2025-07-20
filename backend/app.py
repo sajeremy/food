@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from router import v0
 
 app = FastAPI(title="Food API")
@@ -15,4 +16,11 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+
+
+@app.get("/openapi.json")
+def get_openapi_schema():
+    return app.openapi()
+
+
 app.include_router(v0.router, prefix="/api")
