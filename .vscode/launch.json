@@ -1,0 +1,31 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Frontend",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/frontend",
+      "preLaunchTask": "Start Frontend Server",
+    },
+    {
+      "name": "Launch Backend",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "app:app",
+        "--reload"
+      ],
+      "cwd": "${workspaceFolder}/backend"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Launch Full Stack",
+      "configurations": ["Launch Frontend", "Launch Backend"],
+      "stopAll": true
+    }
+  ]
+}
