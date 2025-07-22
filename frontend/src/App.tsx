@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { parseGroceryReceipt } from './services/api/groceryReceipt';
+import { Header } from '@/components/organisms/Header';
 
 function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -20,7 +21,7 @@ function App() {
 
     try {
       const groceryData = await parseGroceryReceipt({
-        user: 'test_user', // Replace with actual user ID or context
+        user: 'DemoUser', // Replace with actual user ID or context
         imgFile: selectedFile,
       });
       setParsedData(groceryData);
@@ -31,10 +32,15 @@ function App() {
     }
   };
 
+  const handleLogout = () => {
+    console.log('User logged out');
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-4 text-center">Grocery Receipt Parser</h1>
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      <Header onLogout={handleLogout} />
+      <div className="flex-1 flex flex-col items-center justify-center">
+        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <div className="mb-4">
           <input type="file" onChange={handleFileChange} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100" />
         </div>
@@ -47,6 +53,7 @@ function App() {
             <pre className="text-sm whitespace-pre-wrap">{JSON.stringify(parsedData, null, 2)}</pre>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
