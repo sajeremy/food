@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { parseGroceryReceipt } from '../services/api/groceryReceipt';
-import { ReceiptUpload } from '@/components/molecules/ReceiptUpload';
+import { ReceiptUpload, ReceiptReviewModal } from '@/components/molecules';
 
 export function UploadPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [parsedData, setParsedData] = useState<any>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   const handleFileSelect = (file: File) => {
     setSelectedFile(file);
@@ -25,6 +26,7 @@ export function UploadPage() {
         imgFile: selectedFile,
       });
       setParsedData(groceryData);
+      setShowReviewModal(true);
     } 
     catch (error) {
       console.error('Error parsing receipt:', error);
@@ -32,6 +34,20 @@ export function UploadPage() {
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleSaveReceipt = (data: any) => {
+    // Here you would typically save the data to your backend/database
+    console.log('Saving receipt data:', data);
+    alert('Receipt saved successfully!');
+    // Reset the form
+    setSelectedFile(null);
+    setParsedData(null);
+  };
+
+  const handleCancelReview = () => {
+    // Keep the parsed data but close modal - user can review again
+    console.log('Review cancelled');
   };
 
   return (
@@ -43,15 +59,15 @@ export function UploadPage() {
         isUploading={isUploading}
       />
       
-      {parsedData && (
-        <div className="mt-6 p-6 bg-white rounded-xl shadow-md border border-gray-200 w-full">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900">Parsed Data</h2>
-          <div className="bg-gray-50 rounded-lg p-4 overflow-auto max-h-96">
-            <pre className="text-sm whitespace-pre-wrap text-gray-700">
-              {JSON.stringify(parsedData, null, 2)}
-            </pre>
-          </div>
-        </div>
+      {selectedFile && parsedData && (
+        <ReceiptReviewModal
+          isOpen={showReviewModal}
+          onClose={() => setShowReviewModal(false)}
+          receiptImage={selectedFile}
+          parsedData={parsedData}
+          onSave={handleSaveReceipt}
+          onCancel={handleCancelReview}
+        />
       )}
     </div>
   );
