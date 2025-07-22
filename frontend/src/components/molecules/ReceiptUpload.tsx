@@ -4,11 +4,13 @@ import { Upload } from 'lucide-react';
 interface ReceiptUploadProps {
   onFileSelect: (file: File) => void;
   onUpload: () => void;
+  onViewResults?: () => void;
   isUploading?: boolean;
   selectedFile?: File | null;
+  hasParsedData?: boolean;
 }
 
-export function ReceiptUpload({ onFileSelect, onUpload, isUploading = false, selectedFile }: ReceiptUploadProps) {
+export function ReceiptUpload({ onFileSelect, onUpload, onViewResults, isUploading = false, selectedFile, hasParsedData = false }: ReceiptUploadProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -129,13 +131,23 @@ export function ReceiptUpload({ onFileSelect, onUpload, isUploading = false, sel
                 {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
               </p>
             </div>
-            <button
-              onClick={onUpload}
-              disabled={isUploading}
-              className="bg-violet-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-            >
-              {isUploading ? 'Processing...' : 'Parse Receipt'}
-            </button>
+            <div className="flex gap-2">
+              {hasParsedData && onViewResults && (
+                <button
+                  onClick={onViewResults}
+                  className="bg-gray-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-700 transition-colors duration-200"
+                >
+                  View Results
+                </button>
+              )}
+              <button
+                onClick={onUpload}
+                disabled={isUploading}
+                className="bg-violet-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+              >
+                {isUploading ? 'Processing...' : hasParsedData ? 'Re-parse' : 'Parse Receipt'}
+              </button>
+            </div>
           </div>
         </div>
       )}

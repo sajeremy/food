@@ -1,6 +1,7 @@
 import { X, Save } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import heic2any from 'heic2any';
+import { ReceiptDataDisplay } from './ReceiptDataDisplay';
 
 interface ReceiptReviewModalProps {
   isOpen: boolean;
@@ -136,11 +137,9 @@ export function ReceiptReviewModal({
           {/* Right side - Parsed Data */}
           <div className="w-1/2 p-6">
             <div className="h-full flex flex-col">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Parsed Data</h3>
-              <div className="flex-1 bg-gray-50 rounded-lg p-4 overflow-auto">
-                <pre className="text-sm whitespace-pre-wrap text-gray-700">
-                  {JSON.stringify(parsedData, null, 2)}
-                </pre>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Receipt Details</h3>
+              <div className="flex-1 overflow-auto">
+                <ReceiptDataDisplay data={parsedData} />
               </div>
             </div>
           </div>

@@ -11,6 +11,7 @@ export function UploadPage() {
   const handleFileSelect = (file: File) => {
     setSelectedFile(file);
     setParsedData(null); // Clear previous results when new file is selected
+    setShowReviewModal(false); // Close modal if open
   };
 
   const handleParseReceipt = async () => {
@@ -43,6 +44,7 @@ export function UploadPage() {
     // Reset the form
     setSelectedFile(null);
     setParsedData(null);
+    setShowReviewModal(false);
   };
 
   const handleCancelReview = () => {
@@ -50,13 +52,19 @@ export function UploadPage() {
     console.log('Review cancelled');
   };
 
+  const handleViewResults = () => {
+    setShowReviewModal(true);
+  };
+
   return (
     <div className="flex flex-col items-center justify-center px-6 max-w-2xl mx-auto">
       <ReceiptUpload
         onFileSelect={handleFileSelect}
         onUpload={handleParseReceipt}
+        onViewResults={handleViewResults}
         selectedFile={selectedFile}
         isUploading={isUploading}
+        hasParsedData={!!parsedData}
       />
       
       {selectedFile && parsedData && (
