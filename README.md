@@ -6,6 +6,18 @@ A full-stack web application that uses AI to parse grocery receipt images and ex
 
 This application allows users to upload grocery receipt images (including HEIC format) and automatically extract structured information about purchased items, prices, and store details using Google's Gemini AI model.
 
+## Screenshots
+
+### Receipt Upload Interface
+![Upload Page](docs/images/upload-page.png)
+
+The main upload interface features the "ShopSync" branding and allows users to drag and drop receipt images or click to browse files. It supports JPG, PNG, and HEIC formats up to 10MB, with navigation options for Dashboard, Trends, and Store Finder.
+
+### Receipt Review Modal
+![Receipt Review](docs/images/receipt-review.png)
+
+After parsing, users can review the extracted data in a comprehensive side-by-side modal showing the original receipt image and the parsed item details including prices, quantities, categories (dairy, canned, meat, produce), and a "Save Receipt" option.
+
 ## Architecture
 
 ### Backend (`/backend`)
