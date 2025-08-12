@@ -1,4 +1,5 @@
 import { Upload, BarChart3, TrendingUp, MapPin } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface NavigationItemProps {
   icon: React.ReactNode;
@@ -31,17 +32,15 @@ function NavigationItem({ icon, label, isActive = false, onClick }: NavigationIt
   );
 }
 
-interface NavigationBarProps {
-  activeSection?: string;
-  onSectionChange?: (section: string) => void;
-}
+export function NavigationBar() {
+  const navigate = useNavigate();
+  const location = useLocation();
 
-export function NavigationBar({ activeSection = 'dashboard', onSectionChange }: NavigationBarProps) {
   const navigationItems = [
-    { id: 'upload', icon: <Upload size={20} />, label: 'Upload' },
-    { id: 'dashboard', icon: <BarChart3 size={20} />, label: 'Dashboard' },
-    { id: 'trends', icon: <TrendingUp size={20} />, label: 'Trends' },
-    { id: 'store-finder', icon: <MapPin size={20} />, label: 'Store Finder' },
+    { path: '/', icon: <Upload size={20} />, label: 'Upload' },
+    { path: '/dashboard', icon: <BarChart3 size={20} />, label: 'Dashboard' },
+    { path: '/trends', icon: <TrendingUp size={20} />, label: 'Trends' },
+    { path: '/store-finder', icon: <MapPin size={20} />, label: 'Store Finder' },
   ];
 
   return (
@@ -49,11 +48,11 @@ export function NavigationBar({ activeSection = 'dashboard', onSectionChange }: 
       <div className="flex items-center justify-center gap-4 p-2">
         {navigationItems.map((item) => (
           <NavigationItem
-            key={item.id}
+            key={item.path}
             icon={item.icon}
             label={item.label}
-            isActive={activeSection === item.id}
-            onClick={() => onSectionChange?.(item.id)}
+            isActive={location.pathname === item.path}
+            onClick={() => navigate(item.path)}
           />
         ))}
       </div>

@@ -23,7 +23,6 @@ export function UploadPage() {
     setIsUploading(true);
     try {
       const groceryData = await parseGroceryReceipt({
-        user: 'DemoUser',
         imgFile: selectedFile,
       });
       setParsedData(groceryData);
