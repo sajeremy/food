@@ -1,6 +1,7 @@
 {
   "version": "0.2.0",
   "configurations": [
+
     {
       "name": "Launch Frontend",
       "type": "chrome",
@@ -16,10 +17,19 @@
       "module": "uvicorn",
       "args": [
         "app:app",
-        "--reload"
+        "--reload",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000"
       ],
-      "cwd": "${workspaceFolder}/backend"
-    }
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/backend",
+      "python": "${workspaceFolder}/backend/.venv/bin/python",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/backend"
+      }
+    },
   ],
   "compounds": [
     {
