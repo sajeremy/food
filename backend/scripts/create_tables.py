@@ -3,8 +3,6 @@ import os
 from dotenv import load_dotenv
 from sqlmodel import SQLModel, create_engine
 
-from orm.data_models import GroceryReceipt, Store, User, Transaction, UnitType, GroceryCategory
-
 
 def setup_database():
     """Create database tables based on SQLModel definitions"""
@@ -12,7 +10,7 @@ def setup_database():
     load_dotenv(".env.local")
 
     # Get database connection string from environment or use default
-    db_url = os.getenv("DB_URL")
+    db_url = os.getenv("DATABASE_URL")
 
     # Create the database engine
     engine = create_engine(db_url, echo=True)
