@@ -36,6 +36,9 @@ class User(UserBase, table=True):
     __tablename__ = "users"
 
     id: int | None = Field(default=None, primary_key=True, description="Unique identifier for the user")
+    email: str | None = Field(default=None, description="User email")
+    first_name: str | None = Field(default=None, description="User's first name")
+    last_name: str | None = Field(default=None, description="User's last name")
 
     receipts: list["GroceryReceipt"] = Relationship(back_populates="user", sa_relationship_kwargs={"lazy": "select"})
 

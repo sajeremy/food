@@ -2,6 +2,7 @@ from datetime import datetime
 
 from sqlmodel import Session, create_engine, select
 
+from config import settings
 from orm.data_models import (
     GroceryCategory,
     GroceryReceipt,
@@ -12,6 +13,20 @@ from orm.data_models import (
     Transaction,
     User,
 )
+
+# Global engine instance
+engine = None
+
+def get_engine():
+    global engine
+    if engine is None:
+        engine = create_engine(settings.database_url)
+    return engine
+
+def get_session():
+    """FastAPI dependency to get database session"""
+    with Session(get_engine()) as session:
+        yield session
 
 
 def get_or_create_user(session: Session, username: str) -> User:

@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from router import v0
 
 app = FastAPI(title="Food API")
+
 # Vite development server
 origins = [
     "http://localhost:5173",

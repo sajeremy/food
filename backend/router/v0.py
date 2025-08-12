@@ -1,11 +1,11 @@
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from agent.utils import ImageType, parse_grocery_receipt
 from config import settings
-from orm.data_models import GroceryReceiptSchema, UserBase
+from orm.data_models import GroceryReceiptSchema
 from orm.utils import is_receipt_in_db
 
 router = APIRouter(prefix="/v0", tags=["v0"])
@@ -18,14 +18,16 @@ def get_status():
 
 @router.post("/grocery_receipt")
 async def parse_grocery_receipt_image(
-    user: Annotated[str, Form()], img_file: Annotated[UploadFile, File()]
+    # img_file: Annotated[UploadFile, File()], current_user: User = Depends(get_current_user)
+    img_file: Annotated[UploadFile, File()],
+    current_user: str = "mock_user",  # Mocked for example purposes
 ) -> GroceryReceiptSchema:
     """
     Parse a grocery receipt image and return the structured data.
 
     Args:
-        user (str): The username of the user parsing the receipt.
         img_file (UploadFile): The uploaded image file of the grocery receipt.
+        current_user (User): The authenticated user parsing the receipt.
 
     Returns:
         GroceryReceiptSchema: The parsed receipt data.
@@ -42,4 +44,4 @@ async def parse_grocery_receipt_image(
             detail="Receipt already exists in the database.",
         )
 
-    return parse_grocery_receipt(user=user, img_content=img_content, img_type=img_type)
+    return parse_grocery_receipt(user=current_user, img_content=img_content, img_type=img_type)
